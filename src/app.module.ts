@@ -6,9 +6,11 @@ import KpiModule from './module/kpis/kpis.module';
 import { AuthMiddleware } from './middleware/';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), TypeOrmModule.forRoot({
+  //setup env https://www.youtube.com/watch?v=aDlBnxVzS_Q
+  imports: [ConfigModule.forRoot({isGlobal: true,}), TypeOrmModule.forRoot({
     type: "postgres",
     host: "localhost",
     port: 5432,
@@ -17,7 +19,7 @@ import { ConfigModule } from '@nestjs/config';
     database: "task-management",
     autoLoadEntities: true,
     synchronize: true,
-  }), TasksModule, KpiModule],
+  }), TasksModule, KpiModule, AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })
