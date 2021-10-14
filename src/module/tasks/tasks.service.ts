@@ -1,6 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/auth/user.entity';
 import { TaskRepository } from './task.respository';
 import { Task } from './tasks.entity';
 
@@ -10,28 +11,36 @@ export class TasksService {
     
     // https://typeorm.io/#/repository-api
 
-    async getTasks(query: any): Promise<any>{
-        console.log('query ', query);
-        const { name, description, status } = query;
-
-        const builder = this.taskRepository.createQueryBuilder('task');
-        if (name)
-            builder.andWhere("task.name LIKE :name", { name: `%${name}%` });
+    async getTasks(query: any, user): Promise<any>{
+        try {
+            console.log('query ', query, user);
         
-        if (description)
-            builder.andWhere("task.description LIKE :des", { des: `%${description}%`});
+            const { name, description, status } = query;
 
-        if (status)
-            builder.andWhere("task.status = :status", { status: status })
+            const builder = this.taskRepository.createQueryBuilder('task');
+
+            builder.where({ owner: user})
+            if (name)
+                builder.andWhere("task.name LIKE :name", { name: `%${name}%` });
+            
+            if (description)
+                builder.andWhere("task.description LIKE :des", { des: `%${description}%`});
+
+            if (status)
+                builder.andWhere("task.status = :status", { status: status })
+            
+            const tasks = await builder.getMany();
+            return tasks;
+        } catch (error) {
+            console.log('error get all', error);
+        }
         
-        const tasks = await builder.getMany();
-        console.log('tasks',tasks)
-        return tasks;
     }
 
 
-    async getTaskById(id: string): Promise<Task> { // hàm trả về promise 
-        const taskFound = await this.taskRepository.findOne(id);
+    async getTaskById(id: string, user?: User): Promise<Task> { // hàm trả về promise 
+        // const taskFound = await this.taskRepository.findOne(id); // findOne chỉ dựa trên id của task, ai cũng get được
+        const taskFound = await this.taskRepository.findOne({where: {id, owner: user}}); // findOne dựa trên id task và check xem người gửi request có phải là owner của công việc hay không
         console.log('taskFound', taskFound);
         if (!taskFound)
             throw new NotFoundException(`task not found`);
@@ -39,13 +48,14 @@ export class TasksService {
     }
 
 
-    async createTask(data: any, user): Promise<Task>{
+    async createTask(data: any, user: User): Promise<Task>{
         console.log('data', data);
         const task = await this.taskRepository.create({
             name: data?.name,
             description: data?.description,
             status: data?.status,
             creator: user?.id ? user.id : "",
+            owner: user,
         })
 
         await this.taskRepository.save(task);

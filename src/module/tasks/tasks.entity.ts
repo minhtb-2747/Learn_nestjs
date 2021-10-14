@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Exclude } from "class-transformer";
+import { User } from "src/auth/user.entity";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, ManyToOne } from "typeorm";
 
 export enum Status {
     INPROCESS = "inprocess",
@@ -29,5 +31,14 @@ export class Task{
         default: ""
     })
         
+    @Exclude()
     creator: string;
+
+    @ManyToOne(() => User, (user) => user.tasks, { eager: false })
+    owner: User
+
+    // owner: string
+    // @ManyToMany(() => User)
+    // @JoinTable()
+    // owners: User[]
 }

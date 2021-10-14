@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Body, Post, Delete, Patch, Query, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Param, Body, Post, Delete, Patch, Query, UseGuards, Req, UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Task } from './tasks.entity';
 import { TasksService } from './tasks.service';
@@ -8,21 +8,23 @@ import { TasksService } from './tasks.service';
 export class TasksController {
     constructor(private readonly taskService: TasksService) { }
     
+    @UseInterceptors(ClassSerializerInterceptor)
     @Get()
     // Get all Task
-    getTasks(@Query() query: any): Promise<Task>{
-        return this.taskService.getTasks(query);
+    getTasks(@Query() query: any, @Req() req: any): Promise<Task>{
+        const { user } = req;
+        return this.taskService.getTasks(query, user);
     }
 
     @Get("/:id")
     // Get Task by Id
-    getTaskById(@Param() param: any): Promise<Task> {
+    getTaskById(@Param() param: any, @Req() req: any): Promise<Task> {
+        const { user } = req;
         console.log('param', param)
-        return this.taskService.getTaskById(param?.id);
+        return this.taskService.getTaskById(param?.id, user);
     }
 
     @Post()
-        
     // Create Task
     createTask(@Body() data: Task, @Req() req: any): Promise<Task>{
         const { user } = req;
