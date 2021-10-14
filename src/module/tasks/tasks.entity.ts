@@ -23,4 +23,11 @@ export class Task{
         default: Status.INPROCESS
     })
     status: Status;
+
+    // Trường add thêm cần setDefault tránh null
+    @Column({
+        default: ""
+    })
+        
+    creator: string;
 }
