@@ -5,21 +5,37 @@ import { TasksModule } from './module/tasks/tasks.module';
 import KpiModule from './module/kpis/kpis.module';
 import { AuthMiddleware } from './middleware/';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
   //setup env https://www.youtube.com/watch?v=aDlBnxVzS_Q
-  imports: [ConfigModule.forRoot({isGlobal: true,}), TypeOrmModule.forRoot({
-    type: "postgres",
-    host: "localhost",
-    port: 5432,
-    username: "postgres",
-    password: "postgres",
-    database: "task-management",
-    autoLoadEntities: true,
-    synchronize: true,
-  }), TasksModule, KpiModule, AuthModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true, }),
+    // TypeOrmModule.forRoot({
+    //   type: "postgres",
+    //   host: "localhost",
+    //   port: 5432,
+    //   username: "postgres",
+    //   password: "postgres",
+    //   database: "task-management",
+    //   autoLoadEntities: true,
+    //   synchronize: true,
+    // })
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configServer: ConfigService) => ({
+        type: "postgres",
+        autoLoadEntities: true,
+        synchronize: true,
+        host: configServer.get("DB_HOST"),
+        port: configServer.get("DB_PORT"),
+        username: configServer.get("DB_USERNAME"),
+        password: configServer.get("DB_PASSWORD"),
+        database: configServer.get("DB_DATABASENAME"),
+      })
+    })
+    ,TasksModule, KpiModule, AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })
