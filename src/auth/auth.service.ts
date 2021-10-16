@@ -5,6 +5,7 @@ import { SignUpDto } from 'src/dto/auth/signUpDto.dto';
 import { UsersRepository } from './user.respository';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { User } from './user.entity';
 
 
 @Injectable()
@@ -33,7 +34,6 @@ export class AuthService {
         try {
             await this.usersRepository.save(user);
         } catch (error) {
-            console.log('eeeee', error?.code)
             if (error?.code === "23505") {
                 throw new ConflictException('Username already exists')
             } else {
@@ -67,5 +67,11 @@ export class AuthService {
                 return {accessToken};
             }
         }
+    }
+
+    async getUsers(): Promise<any>{
+        const builder = this.usersRepository.createQueryBuilder('user');
+        const users = await builder.getMany()
+        return users
     }
 }

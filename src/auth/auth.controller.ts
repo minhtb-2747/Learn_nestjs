@@ -1,7 +1,8 @@
-import { Controller, Post, Body, Req, UseGuards, Logger } from '@nestjs/common';
+import { Controller, Post, Body, Get, Req, UseGuards, Logger, UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { SignUpDto } from 'src/dto/auth/signUpDto.dto';
 import { AuthService } from './auth.service';
+import { User } from './user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -19,9 +20,11 @@ export class AuthController {
         return this.authService.singIn(data);
     }
 
-    @Post("/test")
-    @UseGuards(AuthGuard())
-    test(@Req() req) {
-        console.log('req', req?.user)
+    @UseInterceptors(ClassSerializerInterceptor)
+    @Get("/users")
+    // @UseGuards(AuthGuard())
+    getUsers():Promise<User> {
+        return this.authService.getUsers();
     }
+
 }

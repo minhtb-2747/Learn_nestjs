@@ -11,16 +11,6 @@ import { AuthModule } from './auth/auth.module';
 @Module({
   //setup env https://www.youtube.com/watch?v=aDlBnxVzS_Q
   imports: [ConfigModule.forRoot({ isGlobal: true, }),
-    // TypeOrmModule.forRoot({
-    //   type: "postgres",
-    //   host: "localhost",
-    //   port: 5432,
-    //   username: "postgres",
-    //   password: "postgres",
-    //   database: "task-management",
-    //   autoLoadEntities: true,
-    //   synchronize: true,
-    // })
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

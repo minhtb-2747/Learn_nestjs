@@ -11,6 +11,7 @@ export class User{
     @Column({unique: true})
     username: string;
 
+    @Exclude()
     @Column()
     password: string;
 
