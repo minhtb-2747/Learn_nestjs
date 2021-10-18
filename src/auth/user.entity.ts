@@ -1,5 +1,5 @@
 
-import { Task } from 'src/module/tasks/tasks.entity';
+import { Task } from '../module/tasks/tasks.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Exclude } from 'class-transformer';
 

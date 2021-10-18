@@ -6,7 +6,7 @@ import { UsersRepository } from './user.respository';
 import { PassportModule } from '@nestjs/passport';
 import {JwtModule } from '@nestjs/jwt';
 import { JwtConstants } from './auth.constants';
-import { JwtStrategy } from 'src/middleware/jwt.stratery';
+import { JwtStrategy } from '../middleware/jwt.stratery';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 

@@ -1,7 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/auth/user.entity';
+import { User } from '../../auth/user.entity';
 import { TaskRepository } from './task.respository';
 import { Task } from './tasks.entity';
 
