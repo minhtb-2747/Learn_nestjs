@@ -14,16 +14,24 @@ import { AuthModule } from './auth/auth.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configServer: ConfigService) => ({
-        type: "postgres",
-        autoLoadEntities: true,
-        synchronize: true,
-        host: configServer.get("DB_HOST"),
-        port: configServer.get("DB_PORT"),
-        username: configServer.get("DB_USERNAME"),
-        password: configServer.get("DB_PASSWORD"),
-        database: configServer.get("DB_DATABASENAME"),
-      })
+      useFactory: (configServer: ConfigService) => {
+        const isProduction = configServer.get("MODE") === "production";
+       
+        return {
+          ssl: isProduction,
+          extra: {
+            ssl: isProduction ? { rejectUnathorized: false } : null,
+          },
+          type: "postgres",
+          autoLoadEntities: true,
+          synchronize: true,
+          host: configServer.get("DB_HOST"),
+          port: configServer.get("DB_PORT"),
+          username: configServer.get("DB_USERNAME"),
+          password: configServer.get("DB_PASSWORD"),
+          database: configServer.get("DB_DATABASENAME"),
+        }
+      }
     })
     ,TasksModule, KpiModule, AuthModule],
   controllers: [AppController],
