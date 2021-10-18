@@ -1,6 +1,6 @@
 import { Controller, Post, Body, Get, Req, UseGuards, Logger, UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { SignUpDto } from '../dto/auth/signUpDto.dto';
+import { SignUpDto } from 'src/dto/auth/signUpDto.dto';
 import { AuthService } from './auth.service';
 import { User } from './user.entity';
 
